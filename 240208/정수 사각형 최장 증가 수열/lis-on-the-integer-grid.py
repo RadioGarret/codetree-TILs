@@ -18,6 +18,7 @@ def DpUpdate(y, x):
         ny = y + dy[k]
         if 0 <= nx < N and 0 <= ny < N and gMap[y][x] < gMap[ny][nx]:
             Dp[y][x] = Dp[ny][nx] + 1
+            return
 
 
 numbers = sorted(numbers, key = lambda x: -gMap[x[0]][x[1]])
