@@ -17,11 +17,11 @@ def DpUpdate(y, x):
         nx = x + dx[k]
         ny = y + dy[k]
         if 0 <= nx < N and 0 <= ny < N and gMap[y][x] < gMap[ny][nx]:
-            Dp[y][x] = Dp[ny][nx] + 1
+            Dp[ny][nx] = Dp[y][x] + 1
             return
 
 
-numbers = sorted(numbers, key = lambda x: -gMap[x[0]][x[1]])
+numbers = sorted(numbers, key = lambda x: gMap[x[0]][x[1]])
 
 
 for y, x in numbers:
