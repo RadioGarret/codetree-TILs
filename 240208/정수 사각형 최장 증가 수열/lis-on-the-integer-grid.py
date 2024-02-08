@@ -16,12 +16,12 @@ def DpUpdate(y, x):
     for k in range(4):
         nx = x + dx[k]
         ny = y + dy[k]
-        if 0 <= nx < N and 0 <= ny < N and gMap[y][x] < gMap[ny][nx]:
+        if 0 <= nx < N and 0 <= ny < N and gMap[y][x] > gMap[ny][nx]:
             Dp[ny][nx] = max(Dp[ny][nx], Dp[y][x] + 1)
             
 
 
-numbers = sorted(numbers, key = lambda x: gMap[x[0]][x[1]])
+numbers = sorted(numbers, key = lambda x: -gMap[x[0]][x[1]])
 
 
 for y, x in numbers:
