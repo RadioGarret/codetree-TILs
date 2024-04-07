@@ -52,6 +52,8 @@ def Interaction_after_Coll(Sy, Sx, nSy, nSx, dir, tMap): # 충돌후
     nextNum = tMap[nSy][nSx]
 
     # S nS nnS
+    if nowNum == nextNum: # 한칸만 이동하는 경우.... 좀 이런거 어떻게 생각하냐..
+        return 
 
     if tMap[nSy][nSx] == 0: # 이로써 끝. 
         tMap[nSy][nSx] = nowNum
@@ -80,36 +82,35 @@ def RudolfMove():
         for i in range(N):
             if gMap[j][i] != 0 and gMap[j][i] != 100:
                 list_dist.append((Distance(Ry, Rx, j, i), j, i))
-    if len(list_dist) == 0:
-        return
 
-    list_dist.sort(key = lambda x : (x[0], -x[1], -x[2]))
-    Sy, Sx = list_dist[0][1], list_dist[0][2]
-    numSanta = gMap[Sy][Sx]
+    if len(list_dist) != 0:
+        list_dist.sort(key = lambda x : (x[0], -x[1], -x[2]))
+        Sy, Sx = list_dist[0][1], list_dist[0][2]
+        numSanta = gMap[Sy][Sx]
 
-    # 루돌프가 이동할 자리 찾기(산타랑 가장 가까운 위치)
-    list_dist = []
-    for k in range(8):
-        nRy, nRx = Ry + dy[k], Rx + dx[k]
-        if 0 <= nRy < N and 0 <= nRx < N:
-            list_dist.append((Distance(nRy, nRx, Sy, Sx), nRy, nRx, k))
-    list_dist.sort(key = lambda x : x[0])
-    nRy, nRx, ndir = list_dist[0][1], list_dist[0][2], list_dist[0][3]
+        # 루돌프가 이동할 자리 찾기(산타랑 가장 가까운 위치)
+        list_dist = []
+        for k in range(8):
+            nRy, nRx = Ry + dy[k], Rx + dx[k]
+            if 0 <= nRy < N and 0 <= nRx < N:
+                list_dist.append((Distance(nRy, nRx, Sy, Sx), nRy, nRx, k))
+        list_dist.sort(key = lambda x : x[0])
+        nRy, nRx, ndir = list_dist[0][1], list_dist[0][2], list_dist[0][3]
 
-    # 박치기하는경우
-    if nRy == Sy and nRx == Sx:
-        nSy, nSx = Sy + C * dy[ndir], Sx + C * dx[ndir]
-        if 0 <= nSy < N and 0 <= nSx < N:
-            gSantaStun[numSanta] = 2
-            Interaction_after_Coll(Sy, Sx, nSy, nSx, ndir, gMap)
-        else: # 튕겨져 나가버린경우
-            gSantaStun[numSanta] = 999999999
-        gSantaScore[numSanta] += C 
-        gMap[Sy][Sx] = 0
+        # 박치기하는경우
+        if nRy == Sy and nRx == Sx:
+            nSy, nSx = Sy + C * dy[ndir], Sx + C * dx[ndir]
+            if 0 <= nSy < N and 0 <= nSx < N:
+                gSantaStun[numSanta] = 2
+                Interaction_after_Coll(Sy, Sx, nSy, nSx, ndir, gMap)
+            else: # 튕겨져 나가버린경우
+                gSantaStun[numSanta] = 999999999
+            gSantaScore[numSanta] += C 
+            gMap[Sy][Sx] = 0
 
-    # 루돌프 위치 바꾸기
-    gMap[Ry][Rx], gMap[nRy][nRx] = 0, gMap[Ry][Rx]
-    Ry, Rx = nRy, nRx
+        # 루돌프 위치 바꾸기
+        gMap[Ry][Rx], gMap[nRy][nRx] = 0, gMap[Ry][Rx]
+        Ry, Rx = nRy, nRx
             
 
 # 산타 : 순서대로 움직이기, 기절은 못움직임
@@ -141,12 +142,9 @@ def SantaMove():
                                     list_dist.append((Distance(Ry, Rx, ny, nx), ny, nx, k))
 
                         if len(list_dist) != 0: 
-                            
                             list_dist.sort(key = lambda x : (x[0], x[3])) # 상우하좌 우선순위
-                            # print('numSanta, list_dist : ', numSanta, list_dist)
                             nSy, nSx, dir = list_dist[0][1], list_dist[0][2], list_dist[0][3]
                             
-
                             # 루돌프 부딪히는경우
                             if nSy == Ry and nSx == Rx:
                                 ndir = Opposite(dir)
@@ -154,11 +152,12 @@ def SantaMove():
                                 if 0 <= nnSy < N and 0 <= nnSx < N:
                                     gSantaStun[numSanta] = 2
                                     Interaction_after_Coll(j, i, nnSy, nnSx, ndir, tMap) # 이렇게 해야 루돌프 위치 안바뀜. 
-
+                                
                                 else: # 튕겨져 나가버린경우
                                     gSantaStun[numSanta] = 999999999
+                                    tMap[j][i] = 0
                                 gSantaScore[numSanta] += D
-                                tMap[j][i] = 0
+
                             else:
                                 tMap[nSy][nSx] = tMap[j][i]
                                 tMap[j][i] = 0
@@ -167,28 +166,19 @@ def SantaMove():
 # M개의 턴 다 돌면 끝나야함. 
 # 턴당 Stun배열 -1씩. 
 # 턴 끝당 산타 + 1점씩
-for _ in range(M):
+for cnt in range(M):
     if NoSanta():
         break
+    
     RudolfMove()
-    # for i in range(N):
-    #     print(gMap[i])
-    # print()
     SantaMove()
-    # for i in range(N):
-    #     print(gMap[i])
-    # print()
+
     for i in range(1, (P+1)):
         if gSantaStun[i] != 0:
             gSantaStun[i] -= 1
     for i in range(1, (P+1)):
         if gSantaStun[i] < 10:
             gSantaScore[i] += 1
-    
-    # print('결과발표')
-    # for i in range(1, (P+1)):
-    #     print(gSantaScore[i], end = ' ')
-    # print()
 
 
 for i in range(1, (P+1)):
