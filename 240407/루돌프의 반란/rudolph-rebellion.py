@@ -64,6 +64,8 @@ def Interaction_after_Coll(Sy, Sx, nSy, nSx, dir, tMap): # 충돌후
         nnSy, nnSx = nSy + dy[dir], nSx + dx[dir]
         if 0 <= nnSy < N and 0 <= nnSx < N:
             Interaction_after_Coll(nSy, nSx, nnSy, nnSx, dir, tMap)
+        else: # 튕겨져 나간경우
+            gSantaStun[nextNum] = 99999999
         tMap[nSy][nSx] = nowNum
         tMap[Sy][Sx] = 0
 
@@ -167,9 +169,9 @@ def SantaMove():
 # 턴당 Stun배열 -1씩. 
 # 턴 끝당 산타 + 1점씩
 for cnt in range(M):
+    
     if NoSanta():
         break
-    
     RudolfMove()
     SantaMove()
 
@@ -179,7 +181,6 @@ for cnt in range(M):
     for i in range(1, (P+1)):
         if gSantaStun[i] < 10:
             gSantaScore[i] += 1
-
 
 for i in range(1, (P+1)):
     print(gSantaScore[i], end = ' ')
