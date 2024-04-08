@@ -169,21 +169,11 @@ def SantaMove():
 # 턴당 Stun배열 -1씩. 
 # 턴 끝당 산타 + 1점씩
 for cnt in range(M):
-    print(gSantaScore)
-
-    for i in range(N):
-        print(gMap[i])
-    print()
     
     if NoSanta():
         break
+        
     RudolfMove()
-    
-    print(gSantaScore)
-
-    for i in range(N):
-        print(gMap[i])
-    print()
 
     SantaMove()
     
